@@ -50,10 +50,17 @@
             dotnet watch run
         ```
     6. First model and data context:
+        - Create model/entity and data context.
+        ```csharp
+            public class DataContext : DbContext
+        ```
     7. Configuration and EF:
     ```javascript
         dotnet tool install --global dotnet-ef
     ```
+    8. Via Package Manager Console:
+    - I cheated. I could not get SqlLite working.
     ```javascript
         dotnet ef migrations add InitialCreate
+        dotnet ef database update
     ```
