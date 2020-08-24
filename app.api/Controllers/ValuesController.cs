@@ -1,7 +1,8 @@
 ﻿using app.api.Context;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System.Linq;
+using System.Threading.Tasks;
 
 namespace app.api.Controllers
 {
@@ -17,19 +18,19 @@ namespace app.api.Controllers
             this.logger = logger;
         }
 
-        [HttpGet("{id}")]
-        public IActionResult GetValue(int id)
+        [HttpGet()]
+        public async Task<IActionResult> GetValuesAsync()
         {
-            var value = context.Values.FirstOrDefault(
-                value => value.Id == id);
-            return Ok(value);
+            var values = await context.Values.ToListAsync();
+            return Ok(values);
         }
 
-        [HttpGet()]
-        public IActionResult GetValues()
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetValueAsync(int id)
         {
-            var values = context.Values.ToList();
-            return Ok(values);
+            var value = await context.Values.FirstOrDefaultAsync(
+                value => value.Id == id);
+            return Ok(value);
         }
     }
 }
