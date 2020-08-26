@@ -10,14 +10,15 @@ namespace app.api
 {
     public class Startup
     {
-        public IConfiguration configuration { get; }
-        public Startup(IConfiguration configuration) => this.configuration = configuration;
+        public IConfiguration Configuration { get; }
+        public Startup(IConfiguration configuration) => this.Configuration = configuration;
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddCors();
             services.AddDbContext<DataContext>(
                 context => context.UseSqlServer(
-                    configuration.GetConnectionString("DefaultConnection")));
+                    Configuration.GetConnectionString("DefaultConnection")));
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -26,13 +27,10 @@ namespace app.api
             {
                 app.UseDeveloperExceptionPage();
             }
-
+            app.UseCors(c => c.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
             app.UseHttpsRedirection();
-
             app.UseRouting();
-
             app.UseAuthorization();
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
