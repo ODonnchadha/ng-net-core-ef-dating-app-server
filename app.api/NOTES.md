@@ -75,13 +75,12 @@
     ```
     - And ensure the following within the stupid project file. (Snippet:)
     ```javascript
-      <ItemGroup>
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.7" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.7" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.7" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.7" />
-       </ItemGroup>
      ```
+
       - How we store passwords in the database:
         - Hashing a password. One-way process. Using an algorithm to scramble the password.
         - Same password? Same hash. Beware: Precomputed decryption of the hash. Rainbow tables.
