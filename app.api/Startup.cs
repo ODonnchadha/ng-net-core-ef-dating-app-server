@@ -1,4 +1,6 @@
 using app.api.Context;
+using app.api.Interfaces.Respositories;
+using app.api.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -19,6 +21,8 @@ namespace app.api
             services.AddDbContext<DataContext>(
                 context => context.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
+
+            services.AddScoped<IAuthRepository, AuthRepository>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

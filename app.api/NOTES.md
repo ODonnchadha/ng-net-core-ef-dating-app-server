@@ -64,3 +64,42 @@
         dotnet ef migrations add InitialCreate
         dotnet ef database update
     ```
+- Security:
+    ```javascript
+        dotnet ef migrations add UserEntity
+    ```
+    - No project was found. Change the current working directory or use the --project option.
+    ```javascript
+        dotnet ef migrations add ux --project "C:\ODonnchadha\ng-net-core-ef-dating-app-server\app.api"
+        dotnet ef database update --project "C:\ODonnchadha\ng-net-core-ef-dating-app-server\app.api"
+    ```
+    - And ensure the following within the stupid project file. (Snippet:)
+    ```javascript
+      <ItemGroup>
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.7" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.7" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.7" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.7" />
+       </ItemGroup>
+     ```
+      - How we store passwords in the database:
+        - Hashing a password. One-way process. Using an algorithm to scramble the password.
+        - Same password? Same hash. Beware: Precomputed decryption of the hash. Rainbow tables.
+        - So we also add a salt. Randomly generated. Added to the hash.
+        - And we will store as a byte[].
+      - Associated User model:
+      - The Repository Pattern:
+        - EF already offers a level of abstraction. Why another?
+        - a. Mediates between the data source and the business layer.
+        - b. Queries the data, maps the data, and persists changes from entity to data source.
+        - So: IIS/Kestrel | Controller | Repository Interface (& Concrete Implementation) | DbContext | EF | Database.
+        - Why? 
+            - Minimize duplicate query logic.
+            - Decouples application from persistence framework.
+            - All DB queries in the same place.
+            - Promotes testability.
+        - services.AddTransient: Lightweight stateless services. Created aech time requested.
+      - The authentication controller:
+      - DTOs:
+      - Token authentication:
+      - Authentication middleware:
