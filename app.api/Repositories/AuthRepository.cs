@@ -20,7 +20,7 @@ namespace app.api.Repositories
         /// <returns></returns>
         public async Task<User> Login(string userName, string password)
         {
-            var user = await context.Users.FirstOrDefaultAsync(u => u.UserName == userName);
+            var user = await context.Users.FirstOrDefaultAsync(u => u.Username == userName);
 
             if (null == user)
             {
@@ -51,7 +51,7 @@ namespace app.api.Repositories
 
         public async Task<bool> UserExists(string userName)
         {
-            if (await context.Users.AnyAsync(u => u.UserName == userName))
+            if (await context.Users.AnyAsync(u => u.Username == userName))
             {
                 return true;
             }

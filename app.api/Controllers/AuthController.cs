@@ -1,6 +1,9 @@
-﻿using app.api.Interfaces.Respositories;
+﻿using app.api.DTOs;
+using app.api.Entities;
+using app.api.Interfaces.Respositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System.Threading.Tasks;
 
 namespace app.api.Controllers
 {
@@ -14,6 +17,22 @@ namespace app.api.Controllers
         {
             this.logger = logger;
             this.repository = repository;
+        }
+
+        [HttpPost("register")]
+        public async Task<IActionResult> Register(UserForRegister userForRegister)
+        {
+            userForRegister.Username = userForRegister.Username.ToLower();
+
+            if (await repository.UserExists(userForRegister.Username))
+            {
+                return BadRequest("Username Already Exists");
+            }
+
+            var user = await repository.Register(
+                new User { Username = userForRegister.Username }, userForRegister.Password);
+
+            return StatusCode(201);
         }
     }
 }
