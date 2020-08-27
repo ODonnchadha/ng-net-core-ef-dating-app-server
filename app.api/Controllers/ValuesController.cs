@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace app.api.Controllers
 {
-    [ApiController(), Authorize(), Route("api/[controller]")]
+    [ApiController(), Route("api/[controller]")]
     public class ValuesController : ControllerBase
     {
         private readonly DataContext context;
@@ -19,14 +19,14 @@ namespace app.api.Controllers
             this.logger = logger;
         }
 
-        [HttpGet()]
+        [HttpGet(), AllowAnonymous()]
         public async Task<IActionResult> GetValuesAsync()
         {
             var values = await context.Values.ToListAsync();
             return Ok(values);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id}"), Authorize()]
         public async Task<IActionResult> GetValueAsync(int id)
         {
             var value = await context.Values.FirstOrDefaultAsync(
