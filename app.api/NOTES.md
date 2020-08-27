@@ -75,10 +75,10 @@
     ```
     - And ensure the following within the stupid project file. (Snippet:)
     ```javascript
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.7" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.7" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.7" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.7" />
+        <PackageReference Include=Microsoft.EntityFrameworkCore Version=3.1.7 />
+        <PackageReference Include=Microsoft.EntityFrameworkCore.Design Version=3.1.7 />
+        <PackageReference Include=Microsoft.EntityFrameworkCore.SqlServer Version=3.1.7 />
+        <PackageReference Include=Microsoft.EntityFrameworkCore.Tools Version=3.1.7 />
      ```
 
       - How we store passwords in the database:
