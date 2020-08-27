@@ -26,7 +26,7 @@ namespace app.api.Controllers
 
             if (await repository.UserExists(userForRegister.Username))
             {
-                return BadRequest("Username Already Exists");
+                return BadRequest("This username already exists");
             }
 
             var user = await repository.Register(

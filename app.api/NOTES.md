@@ -102,4 +102,6 @@
       - The authentication controller:
       - DTOs:
       - Token authentication:
+        - If not: [ApiController()]
+        - Then: Register([FromBody]UserForRegister userForRegister) & if (!ModelState.IsValid) return BadRequest();
       - Authentication middleware:
