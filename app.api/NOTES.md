@@ -74,7 +74,7 @@
         dotnet ef database update --project "C:\ODonnchadha\ng-net-core-ef-dating-app-server\app.api"
     ```
     - And ensure the following within the stupid project file. (Snippet:)
-    ```javascript
+    ```xml
         <PackageReference Include=Microsoft.EntityFrameworkCore Version=3.1.7 />
         <PackageReference Include=Microsoft.EntityFrameworkCore.Design Version=3.1.7 />
         <PackageReference Include=Microsoft.EntityFrameworkCore.SqlServer Version=3.1.7 />
