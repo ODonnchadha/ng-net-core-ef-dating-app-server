@@ -1,5 +1,5 @@
-# Culled from an Udemy class entitled "Build An App With ASPNET Core And Angular From Scratch."
-# By Neil Cummings.
+## Culled from an Udemy class entitled "Build An App With ASPNET Core And Angular From Scratch."
+### By Neil Cummings.
 
 - Introduction:
     - Tools and technologies:
