@@ -79,7 +79,7 @@
         <PackageReference Include=Microsoft.EntityFrameworkCore.Design Version=3.1.7 />
         <PackageReference Include=Microsoft.EntityFrameworkCore.SqlServer Version=3.1.7 />
         <PackageReference Include=Microsoft.EntityFrameworkCore.Tools Version=3.1.7 />
-     ```
+    ```
 
       - How we store passwords in the database:
         - Hashing a password. One-way process. Using an algorithm to scramble the password.
