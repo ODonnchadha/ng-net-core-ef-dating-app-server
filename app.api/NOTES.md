@@ -132,3 +132,7 @@
             - 5. And the server validates the JWT and sends back a response.
 
       - Authentication middleware:
+        - Pipeline code. NOTE: With HTTPS and certificates, we become more secure, rather than Postman and plain text.
+        - Recommended to place appsettings.json within .gitignore file due to the 'secret.'
+        - In production, we can use environment variables.
+        - Another option is for use to enable secret storage.

@@ -1,12 +1,15 @@
 using app.api.Context;
 using app.api.Interfaces.Respositories;
 using app.api.Repositories;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace app.api
 {
@@ -16,6 +19,17 @@ namespace app.api
         public Startup(IConfiguration configuration) => this.Configuration = configuration;
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddAuthentication(
+                JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(bearer => 
+                bearer.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(
+                        Configuration.GetSection("AppSettings:Token").Value)),
+                    ValidateIssuer = false,
+                    ValidateAudience = false
+                });
+
             services.AddControllers();
             services.AddCors();
             services.AddDbContext<DataContext>(
@@ -31,6 +45,7 @@ namespace app.api
             {
                 app.UseDeveloperExceptionPage();
             }
+            app.UseAuthentication();
             app.UseCors(c => c.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
             app.UseHttpsRedirection();
             app.UseRouting();
