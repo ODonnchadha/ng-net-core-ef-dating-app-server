@@ -101,7 +101,34 @@
         - services.AddTransient: Lightweight stateless services. Created aech time requested.
       - The authentication controller:
       - DTOs:
-      - Token authentication:
         - If not: [ApiController()]
         - Then: Register([FromBody]UserForRegister userForRegister) & if (!ModelState.IsValid) return BadRequest();
+
+      - Token authentication:
+        - JSON Web Token. Industry standard. Self-contained. Credentials, Claims, Et al. JWT.
+        - The server does not need to go back to the database in order to authenticate.
+        - Structure: 
+            - Header:
+            ```javascript
+                { "alg": "HS512", "typ": "JWT" }
+            ```
+            - Payload:
+            ```javascript
+                { "nameid": "8", "unique_name": "D", "nbf": 11578831001, "exp": 11578832001, "iat": 11578831001 }
+            ```
+            - Header and payload can be decoded by anyone. So do be careful.
+            - Secret:
+            ```javascript
+                HMACSHA256(
+                    base64UrlEncode(header + "." +
+                    base64UrlEncod(payload),
+                    secret
+                 )
+            ```
+            - 1. Client sends username and password to the server.
+            - 2. Password hashed on the server and compared to the database. 
+            - 3. Server will create a token and send to the client, which stores the thing locally.
+            - 4. With future requests, JWT is sent to the server.
+            - 5. And the server validates the JWT and sends back a response.
+
       - Authentication middleware:
