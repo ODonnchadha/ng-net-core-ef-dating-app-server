@@ -41,6 +41,7 @@ namespace app.api
                     Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddScoped<IAuthRepository, AuthRepository>();
+            services.AddScoped<IDatingRepository, DatingRepository>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
