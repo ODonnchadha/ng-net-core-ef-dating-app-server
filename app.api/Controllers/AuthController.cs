@@ -1,6 +1,7 @@
 ﻿using app.api.DTOs;
 using app.api.Entities;
 using app.api.Interfaces.Respositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
