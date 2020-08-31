@@ -1,8 +1,10 @@
-﻿using app.api.Interfaces.Respositories;
+﻿using app.api.DTOs;
+using app.api.Interfaces.Respositories;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace app.api.Controllers
@@ -10,14 +12,14 @@ namespace app.api.Controllers
     [ApiController(), Authorize(), Route("api/[controller]")]
     public class UsersController : ControllerBase
     {
-        private readonly IConfiguration configuration;
         private readonly IDatingRepository repository;
         private readonly ILogger<UsersController> logger;
+        private readonly IMapper mapper;
 
-        public UsersController(IConfiguration configuration, IDatingRepository repository, ILogger<UsersController> logger)
+        public UsersController(IDatingRepository repository, ILogger<UsersController> logger, IMapper mapper)
         {
-            this.configuration = configuration;
             this.logger = logger;
+            this.mapper = mapper;
             this.repository = repository;
         }
 
@@ -25,14 +27,20 @@ namespace app.api.Controllers
         public async Task<IActionResult> GetUsers()
         {
             var users = await repository.GetUsers();
-            return Ok(users);
+
+            var dto = mapper.Map<IEnumerable<UserForList>>(users);
+
+            return Ok(dto);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUser(int id)
         {
             var user = await repository.GetUser(id);
-            return Ok(user);
+
+            var dto = mapper.Map<UserForDetails>(user);
+
+            return Ok(dto);
         }
     }
 }
