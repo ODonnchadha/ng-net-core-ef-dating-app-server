@@ -2,6 +2,7 @@ using app.api.Context;
 using app.api.Extensions;
 using app.api.Interfaces.Respositories;
 using app.api.Repositories;
+using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
@@ -36,11 +37,14 @@ namespace app.api
 
             services.AddControllers();
             services.AddCors();
+            services.AddAutoMapper(typeof(DatingRepository).Assembly);
             services.AddDbContext<DataContext>(
                 context => context.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddScoped<IAuthRepository, AuthRepository>();
+            services.AddScoped<IDatingRepository, DatingRepository>();
+            services.AddTransient<Seed>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

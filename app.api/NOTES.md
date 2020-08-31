@@ -135,3 +135,10 @@
         - Recommended to place appsettings.json within .gitignore file due to the 'secret.'
         - In production, we can use environment variables.
         - Another option is for use to enable secret storage.
+
+    - Extending the API:
+        - Entending the user class:
+        - Migrations:
+        - Cascade Delete:
+        - Seeding data into our database:
+        - Using Automapper.
