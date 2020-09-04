@@ -45,7 +45,7 @@ namespace app.api.Controllers
         }
 
         [HttpPost()]
-        public async Task<IActionResult> AddPhotoForUser(int id, PhotoForCreation dto)
+        public async Task<IActionResult> AddPhotoForUser(int id, [FromForm()]PhotoForCreation dto)
         {
             if (id != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
             {
@@ -56,7 +56,7 @@ namespace app.api.Controllers
 
             var file = dto.File;
 
-            var uploadResult = new ImageUploadResult();
+            var uploadResult = new ImageUploadResult { };
 
             if (file?.Length > 0)
             {
