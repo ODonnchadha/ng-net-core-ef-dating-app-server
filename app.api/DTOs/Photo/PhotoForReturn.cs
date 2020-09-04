@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace app.api.Entities
+namespace app.api.DTOs
 {
-    public class Photo
+    public class PhotoForReturn
     {
         public int Id { get; set; }
         public string Url { get; set; }
@@ -10,8 +10,5 @@ namespace app.api.Entities
         public DateTime DateAdded { get; set; }
         public bool IsDefault { get; set; }
         public string PublicId { get; set; }
-        public User User { get; set; }
-        public int UserId { get; set; }
-
     }
 }

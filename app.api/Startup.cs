@@ -2,6 +2,7 @@ using app.api.Context;
 using app.api.Extensions;
 using app.api.Interfaces.Respositories;
 using app.api.Repositories;
+using app.api.Settings;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -37,6 +38,7 @@ namespace app.api
 
             services.AddControllers();
             services.AddCors();
+            services.Configure<CloudinarySettings>(Configuration.GetSection("CloudinarySettings"));
             services.AddAutoMapper(typeof(DatingRepository).Assembly);
             services.AddDbContext<DataContext>(
                 context => context.UseSqlServer(

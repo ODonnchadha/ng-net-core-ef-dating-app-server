@@ -1,0 +1,95 @@
+﻿using app.api.DTOs;
+using app.api.Entities;
+using app.api.Interfaces.Respositories;
+using app.api.Settings;
+using AutoMapper;
+using CloudinaryDotNet;
+using CloudinaryDotNet.Actions;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
+
+namespace app.api.Controllers
+{
+    [ApiController(), Authorize(), Route("api/users/{userId}/photos")]
+    public class PhotosController : ControllerBase
+    {
+        private Cloudinary cloudinary;
+        private readonly IDatingRepository repository;
+        private readonly IMapper mapper;
+        private readonly IOptions<CloudinarySettings> options;
+        public PhotosController(IDatingRepository repository, IMapper mapper, IOptions<CloudinarySettings> options)
+        {
+            this.mapper = mapper;
+            this.options = options;
+            this.repository = repository;
+
+            this.cloudinary = new Cloudinary(new Account
+            {
+                Cloud = options.Value.CloudName,
+                ApiKey = options.Value.ApiKey,
+                ApiSecret = options.Value.ApiSecret
+            });
+        }
+
+        [HttpGet("{id}", Name="GetPhoto")]
+        public async Task<IActionResult> GetPhoto(int id)
+        {
+            var entity = await repository.GetPhoto(id);
+            var dto = mapper.Map<PhotoForReturn>(entity);
+
+            return Ok(dto);
+        }
+
+        [HttpPost()]
+        public async Task<IActionResult> AddPhotoForUser(int id, PhotoForCreation dto)
+        {
+            if (id != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+            {
+                return Unauthorized();
+            }
+
+            var user = await repository.GetUser(id);
+
+            var file = dto.File;
+
+            var uploadResult = new ImageUploadResult();
+
+            if (file?.Length > 0)
+            {
+                using (var stream = file.OpenReadStream())
+                {
+                    var uploadParams = new ImageUploadParams
+                    {
+                        File = new FileDescription(file.Name, stream),
+                        Transformation = new Transformation().Width(500).Height(500).Crop("fill").Gravity("face")
+                    };
+
+                    uploadResult = cloudinary.Upload(uploadParams);
+                }
+            }
+
+            dto.Url = uploadResult.Url.ToString();
+            dto.PublicId = uploadResult.PublicId;
+
+            var photo = mapper.Map<Photo>(dto);
+
+            if (!user.Photos.Any(p => p.IsDefault))
+            {
+                photo.IsDefault = true;
+            }
+
+            user.Photos.Add(photo);
+
+            if (await repository.SaveAll())
+            {
+                return CreatedAtRoute("GetPhoto", new { id = photo.Id }, mapper.Map<PhotoForReturn>(photo));
+            }
+
+            return BadRequest("Unable to upload photo");
+        }
+    }
+}

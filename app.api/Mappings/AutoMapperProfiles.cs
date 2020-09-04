@@ -9,6 +9,7 @@ namespace app.api.Mappings
         public AutoMapperProfiles()
         {
             #region DTOs => Entities
+            CreateMap<DTOs.PhotoForCreation, Entities.Photo>();
             CreateMap<DTOs.UserForUpdate, Entities.User>();
             #endregion
 
@@ -34,6 +35,7 @@ namespace app.api.Mappings
                     source => source.DateOfBirth.Age()));
 
             CreateMap<Entities.Photo, DTOs.PhotoForDetails>();
+            CreateMap<Entities.Photo, DTOs.PhotoForReturn>();
             #endregion
         }
     }
