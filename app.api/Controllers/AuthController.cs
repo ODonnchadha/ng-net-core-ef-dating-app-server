@@ -1,6 +1,7 @@
 ﻿using app.api.DTOs;
 using app.api.Entities;
 using app.api.Interfaces.Respositories;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -19,11 +20,17 @@ namespace app.api.Controllers
         private readonly IAuthRepository repository;
         private readonly IConfiguration configuration;
         private readonly ILogger<AuthController> logger;
+        private readonly IMapper mapper;
 
-        public AuthController(IAuthRepository repository, IConfiguration configuration, ILogger<AuthController> logger)
+        public AuthController(
+            IAuthRepository repository, 
+            IConfiguration configuration, 
+            ILogger<AuthController> logger,
+            IMapper mapper)
         {
             this.configuration = configuration;
             this.logger = logger;
+            this.mapper = mapper;
             this.repository = repository;
         }
 
@@ -70,7 +77,11 @@ namespace app.api.Controllers
             var tokenHandler = new JwtSecurityTokenHandler();
             var token = tokenHandler.CreateToken(tokenDescriptor);
 
-            return Ok(new { token = tokenHandler.WriteToken(token) });
+            return Ok(new 
+            { 
+                token = tokenHandler.WriteToken(token),
+                user = mapper.Map<UserForList>(user)
+            });
         }
     }
 }
