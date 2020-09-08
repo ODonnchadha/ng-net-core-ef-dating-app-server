@@ -3,6 +3,7 @@ using app.api.Entities;
 using app.api.Interfaces.Respositories;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace app.api.Repositories
@@ -28,6 +29,13 @@ namespace app.api.Repositories
         }
 
         public async Task<bool> SaveAll() => await context.SaveChangesAsync() > 0;
+
+        public async Task<Photo> GetDefaultPhoto(int userId)
+        {
+            return await context.Photos.Where(
+                u => u.UserId == userId).FirstOrDefaultAsync(
+                p => p.IsDefault == true);
+        }
 
         public Task<Photo> GetPhoto(int id)
         {

@@ -91,5 +91,40 @@ namespace app.api.Controllers
 
             return BadRequest("Unable to upload photo");
         }
+
+        [HttpPost("{id}/default")]
+        public async Task<IActionResult> SetDefaultPhoto(int userId, int id)
+        {
+            if (userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+            {
+                return Unauthorized();
+            }
+
+            var user = await repository.GetUser(userId);
+
+            if ((bool)!user?.Photos?.Any(p => p.Id == id))
+            {
+                return Unauthorized();
+            }
+
+            var photo = await repository.GetPhoto(id);
+
+            if (photo.IsDefault)
+            {
+                return BadRequest("This is already the default photo");
+            }
+
+            var current = await repository.GetDefaultPhoto(userId);
+
+            current.IsDefault = false;
+            photo.IsDefault = true;
+
+            if (await repository.SaveAll())
+            {
+                return NoContent();
+            }
+
+            return BadRequest("Error setting default photo");
+        }
     }
 }
