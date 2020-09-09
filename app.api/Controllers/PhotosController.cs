@@ -31,7 +31,7 @@ namespace app.api.Controllers
             {
                 Cloud = options.Value.CloudName,
                 ApiKey = options.Value.ApiKey,
-                ApiSecret = options.Value.ApiSecret
+                ApiSecret = options.Value.ApiSecret,
             });
         }
 
@@ -73,7 +73,7 @@ namespace app.api.Controllers
             return BadRequest("Error deleting photo");
         }
 
-        [HttpGet("{id}", Name="GetPhoto")]
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetPhoto(int id)
         {
             var entity = await repository.GetPhoto(id);
@@ -83,14 +83,14 @@ namespace app.api.Controllers
         }
 
         [HttpPost()]
-        public async Task<IActionResult> AddPhotoForUser(int id, [FromForm()]PhotoForCreation dto)
+        public async Task<IActionResult> AddPhotoForUser(int userId, [FromForm]PhotoForCreation dto)
         {
-            if (id != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+            if (userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
             {
                 return Unauthorized();
             }
 
-            var user = await repository.GetUser(id);
+            var user = await repository.GetUser(userId);
 
             var file = dto.File;
 
@@ -124,7 +124,8 @@ namespace app.api.Controllers
 
             if (await repository.SaveAll())
             {
-                return CreatedAtRoute("GetPhoto", new { id = photo.Id }, mapper.Map<PhotoForReturn>(photo));
+                var p = mapper.Map<PhotoForReturn>(photo);
+                return Ok(p);
             }
 
             return BadRequest("Unable to upload photo");
