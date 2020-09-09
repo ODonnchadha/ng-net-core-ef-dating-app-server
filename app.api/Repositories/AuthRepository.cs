@@ -3,6 +3,7 @@ using app.api.Entities;
 using app.api.Helpers.Auth;
 using app.api.Interfaces.Respositories;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace app.api.Repositories
@@ -20,7 +21,8 @@ namespace app.api.Repositories
         /// <returns></returns>
         public async Task<User> Login(string userName, string password)
         {
-            var user = await context.Users.FirstOrDefaultAsync(u => u.Username == userName);
+            var user = await context.Users.Include(p => p.Photos)
+                .FirstOrDefaultAsync(u => u.Username == userName);
 
             if (null == user)
             {

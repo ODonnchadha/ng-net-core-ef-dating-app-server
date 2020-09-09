@@ -11,5 +11,7 @@ namespace app.api.Interfaces.Respositories
         Task<User> GetUser(int id);
         Task<IEnumerable<User>> GetUsers();
         Task<bool> SaveAll();
+        Task<Photo> GetDefaultPhoto(int userId);
+        Task<Photo> GetPhoto(int id);
     }
 }
