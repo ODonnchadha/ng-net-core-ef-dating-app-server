@@ -35,6 +35,44 @@ namespace app.api.Controllers
             });
         }
 
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeletePhoto(int userId, int id)
+        {
+            if (userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+            {
+                return Unauthorized();
+            }
+
+            var user = await repository.GetUser(userId);
+
+            if ((bool)!user?.Photos?.Any(p => p.Id == id))
+            {
+                return Unauthorized();
+            }
+
+            var photo = await repository.GetPhoto(id);
+
+            if ((bool)photo?.IsDefault)
+            {
+                return BadRequest("Cannot delete default photo.");
+            }
+
+            if (photo.PublicId != null)
+            {
+                // response.Result == "ok"
+                cloudinary.Destroy(new DeletionParams(photo.PublicId));
+            }
+
+            repository.Delete(photo);
+
+            if (await repository.SaveAll())
+            {
+                return Ok();
+            }
+
+            return BadRequest("Error deleting photo");
+        }
+
         [HttpGet("{id}", Name="GetPhoto")]
         public async Task<IActionResult> GetPhoto(int id)
         {
