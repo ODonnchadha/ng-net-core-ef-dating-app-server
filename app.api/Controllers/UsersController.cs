@@ -1,4 +1,5 @@
 ﻿using app.api.DTOs;
+using app.api.Filters;
 using app.api.Interfaces.Respositories;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
@@ -11,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace app.api.Controllers
 {
-    [ApiController(), Authorize(), Route("api/[controller]")]
+    [ApiController(), Authorize(), Route("api/[controller]"), ServiceFilter(typeof(LogUserActivity))]
     public class UsersController : ControllerBase
     {
         private readonly IDatingRepository repository;
