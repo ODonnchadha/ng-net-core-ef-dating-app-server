@@ -35,7 +35,7 @@ namespace app.api.Controllers
             return Ok(dtos);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id}", Name="GetUser")]
         public async Task<IActionResult> GetUser(int id)
         {
             var entity = await repository.GetUser(id);
