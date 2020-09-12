@@ -10,6 +10,7 @@ namespace app.api.Mappings
         {
             #region DTOs => Entities
             CreateMap<DTOs.PhotoForCreation, Entities.Photo>();
+            CreateMap<DTOs.UserForRegister, Entities.User>();
             CreateMap<DTOs.UserForUpdate, Entities.User>();
             #endregion
 
