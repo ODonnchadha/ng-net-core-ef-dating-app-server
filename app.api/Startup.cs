@@ -1,5 +1,6 @@
 using app.api.Context;
 using app.api.Extensions;
+using app.api.Filters;
 using app.api.Interfaces.Respositories;
 using app.api.Repositories;
 using app.api.Settings;
@@ -46,6 +47,8 @@ namespace app.api
 
             services.AddScoped<IAuthRepository, AuthRepository>();
             services.AddScoped<IDatingRepository, DatingRepository>();
+
+            services.AddScoped<LogUserActivity>();
             services.AddTransient<Seed>();
         }
 
