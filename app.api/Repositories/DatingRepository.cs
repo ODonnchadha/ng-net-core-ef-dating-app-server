@@ -1,5 +1,7 @@
 ﻿using app.api.Context;
 using app.api.Entities;
+using app.api.Helpers.Paging;
+using app.api.Helpers.Users;
 using app.api.Interfaces.Respositories;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
@@ -22,10 +24,12 @@ namespace app.api.Repositories
             return user;
         }
 
-        public async Task<IEnumerable<User>> GetUsers()
+        public async Task<PagedList<User>> GetUsers(UserParams userParams)
         {
-            var users = await context.Users.Include(p => p.Photos).ToListAsync();
-            return users;
+            var users = context.Users.Include(p => p.Photos);
+
+            return await PagedList<User>.CreateAsync(
+                users, userParams.PageNumber, userParams.PageSize);
         }
 
         public async Task<bool> SaveAll() => await context.SaveChangesAsync() > 0;

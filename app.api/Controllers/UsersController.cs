@@ -1,5 +1,7 @@
 ﻿using app.api.DTOs;
+using app.api.Extensions;
 using app.api.Filters;
+using app.api.Helpers.Users;
 using app.api.Interfaces.Respositories;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
@@ -26,10 +28,19 @@ namespace app.api.Controllers
             this.repository = repository;
         }
 
+        /// <summary>
+        /// /api/users?pageNumber=1&pageSize=10
+        /// pagination: {currentPage":1,"itemsPerPage":10,"totalItems":13,"totalPages":2}
+        /// </summary>
+        /// <param name="userParams"></param>
+        /// <returns></returns>
         [HttpGet()]
-        public async Task<IActionResult> GetUsers()
+        public async Task<IActionResult> GetUsers([FromQuery]UserParams userParams)
         {
-            var entities = await repository.GetUsers();
+            var entities = await repository.GetUsers(userParams);
+
+            Response.AddPagination(
+                entities.CurrentPage, entities.PageSize, entities.TotalCount, entities.TotalPages);
 
             var dtos = mapper.Map<IEnumerable<UserForList>>(entities);
 
