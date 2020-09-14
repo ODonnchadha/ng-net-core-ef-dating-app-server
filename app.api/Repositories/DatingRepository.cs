@@ -4,6 +4,7 @@ using app.api.Helpers.Paging;
 using app.api.Helpers.Users;
 using app.api.Interfaces.Respositories;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -30,6 +31,15 @@ namespace app.api.Repositories
 
             users = users.Where(u => u.Id != userParams.UserId);
             users = users.Where(u => u.Gender == userParams.Gender);
+
+            if (userParams.MinAge != 18 || userParams.MaxAge != 99)
+            {
+                var minimumDateOfBirth = DateTime.Today.AddYears(-userParams.MaxAge - 1);
+                var maximumDateOfBirth = DateTime.Today.AddYears(-userParams.MinAge);
+
+                users = users.Where(
+                    u => u.DateOfBirth >= minimumDateOfBirth && u.DateOfBirth <= maximumDateOfBirth);
+            }
 
             return await PagedList<User>.CreateAsync(
                 users, userParams.PageNumber, userParams.PageSize);
