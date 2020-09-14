@@ -37,12 +37,19 @@ namespace app.api.Controllers
         [HttpGet()]
         public async Task<IActionResult> GetUsers([FromQuery]UserParams userParams)
         {
-            var entities = await repository.GetUsers(userParams);
+            var user = await repository.GetUser(int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value));
+            userParams.UserId = user.Id;
+            if (string.IsNullOrEmpty(user.Gender))
+            {
+                userParams.Gender = user.Gender == "male" ? "female" : "male";
+            }
+
+            var entity = await repository.GetUsers(userParams);
 
             Response.AddPagination(
-                entities.CurrentPage, entities.PageSize, entities.TotalCount, entities.TotalPages);
+                entity.CurrentPage, entity.PageSize, entity.TotalCount, entity.TotalPages);
 
-            var dtos = mapper.Map<IEnumerable<UserForList>>(entities);
+            var dtos = mapper.Map<IEnumerable<UserForList>>(entity);
 
             return Ok(dtos);
         }
