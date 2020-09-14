@@ -39,7 +39,8 @@ namespace app.api.Controllers
         {
             var user = await repository.GetUser(int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value));
             userParams.UserId = user.Id;
-            if (string.IsNullOrEmpty(user.Gender))
+
+            if (string.IsNullOrEmpty(userParams.Gender))
             {
                 userParams.Gender = user.Gender == "male" ? "female" : "male";
             }
