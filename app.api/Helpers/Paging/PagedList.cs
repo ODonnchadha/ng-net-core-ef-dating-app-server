@@ -16,7 +16,7 @@ namespace app.api.Helpers.Paging
         public PagedList(List<T> items, int count, int pageNumber, int pageSize)
         {
             this.TotalCount = count;
-            this.PageSize = PageSize;
+            this.PageSize = pageSize;
             this.CurrentPage = pageNumber;
             this.TotalPages = (int)Math.Ceiling(count / (double)pageSize);
 
