@@ -1,7 +1,6 @@
 ﻿using app.api.Entities;
 using app.api.Helpers.Paging;
 using app.api.Helpers.Users;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace app.api.Interfaces.Respositories
@@ -13,6 +12,7 @@ namespace app.api.Interfaces.Respositories
         Task<User> GetUser(int id);
         Task<PagedList<User>> GetUsers(UserParams userParams);
         Task<bool> SaveAll();
+        Task<Like> GetLike(int userId, int recipientId);
         Task<Photo> GetDefaultPhoto(int userId);
         Task<Photo> GetPhoto(int id);
     }

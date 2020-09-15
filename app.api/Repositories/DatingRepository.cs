@@ -60,6 +60,8 @@ namespace app.api.Repositories
 
         public async Task<bool> SaveAll() => await context.SaveChangesAsync() > 0;
 
+        public async Task<Like> GetLike(int userId, int recipientId) => await context.Likes.FirstOrDefaultAsync(u => u.LikerId == userId && u.LikeeId == recipientId);
+
         public async Task<Photo> GetDefaultPhoto(int userId)
         {
             return await context.Photos.Where(
