@@ -7,7 +7,31 @@ namespace app.api.Context
     {
         public DbSet<Photo> Photos { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<Like> Likes { get; set; }
         public DbSet<Value> Values { get; set; }
         public DataContext(DbContextOptions<DataContext> options) : base(options) { }
+
+        /// <summary>
+        /// Fluent API:
+        /// One user can like many other users. Many other users can like a user. Many-to-many.
+        /// e.g.: USER has one LIKER with many LIKEES.
+        /// e.g.: USER has one LIKE with many LIKERS.
+        /// EF: Two (2) One-to-many relationships.
+        /// </summary>
+        /// <param name="builder"></param>
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            builder.Entity<Like>().HasKey(k => new
+            {
+                k.LikerId,
+                k.LikeeId
+            });
+            builder.Entity<Like>().HasOne(u => u.Likee).WithMany(
+                u => u.Likers).HasForeignKey(u => u.LikeeId).OnDelete(
+                DeleteBehavior.Restrict);
+            builder.Entity<Like>().HasOne(u => u.Liker).WithMany(
+                u => u.Likees).HasForeignKey(u => u.LikerId).OnDelete(
+                DeleteBehavior.Restrict);
+        }
     }
 }
