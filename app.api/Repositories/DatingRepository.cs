@@ -40,7 +40,7 @@ namespace app.api.Repositories
             }
             if (userParams.Likees)
             {
-                var userLikees = await GetUserLikes(userParams.UserId, userParams.Likees);
+                var userLikees = await GetUserLikes(userParams.UserId, userParams.Likers);
                 users = users.Where(u => userLikees.Contains(u.Id));
             }
 
@@ -81,7 +81,7 @@ namespace app.api.Repositories
             }
             else
             {
-                return user.Likers.Where(u => u.LikerId == id).Select(u => u.LikeeId);
+                return user.Likees.Where(u => u.LikerId == id).Select(u => u.LikeeId);
             }
         }
 
