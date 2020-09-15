@@ -1,4 +1,5 @@
 ﻿using app.api.DTOs;
+using app.api.Entities;
 using app.api.Extensions;
 using app.api.Filters;
 using app.api.Helpers.Users;
@@ -63,6 +64,34 @@ namespace app.api.Controllers
             var dto = mapper.Map<UserForDetails>(entity);
 
             return Ok(dto);
+        }
+
+        [HttpPost("{id}/likes/{recipientId}")]
+        public async Task<IActionResult> LikeUser(int id, int recipientId)
+        {
+            if (id != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+            {
+                return Unauthorized();
+            }
+
+            var entity = await repository.GetLike(id, recipientId);
+            if (entity != null)
+            {
+                return BadRequest("User is already liked");
+            }
+            if (await repository.GetUser(recipientId) == null)
+            {
+                return NotFound();
+            }
+
+            repository.Add<Like>(new Like { LikerId = id, LikeeId = recipientId });
+
+            if (await repository.SaveAll())
+            {
+                return Ok();
+            }
+
+            return BadRequest("Failed to like user");
         }
 
         [HttpPut("{id}")]
