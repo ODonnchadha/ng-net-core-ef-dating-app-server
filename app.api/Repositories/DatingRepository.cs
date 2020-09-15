@@ -5,6 +5,7 @@ using app.api.Helpers.Users;
 using app.api.Interfaces.Respositories;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -32,6 +33,17 @@ namespace app.api.Repositories
             users = users.Where(u => u.Id != userParams.UserId);
             users = users.Where(u => u.Gender == userParams.Gender);
 
+            if (userParams.Likers)
+            {
+                var userLikers = await GetUserLikes(userParams.UserId, userParams.Likers);
+                users = users.Where(u => userLikers.Contains(u.Id));
+            }
+            if (userParams.Likees)
+            {
+                var userLikees = await GetUserLikes(userParams.UserId, userParams.Likees);
+                users = users.Where(u => userLikees.Contains(u.Id));
+            }
+
             if (userParams.MinAge != 18 || userParams.MaxAge != 99)
             {
                 var minimumDateOfBirth = DateTime.Today.AddYears(-userParams.MaxAge - 1);
@@ -56,6 +68,21 @@ namespace app.api.Repositories
 
             return await PagedList<User>.CreateAsync(
                 users, userParams.PageNumber, userParams.PageSize);
+        }
+
+        private async Task<IEnumerable<int>> GetUserLikes(int id, bool isLiker)
+        {
+            var user = await context.Users.Include(
+                u => u.Likers).Include(u => u.Likees).FirstOrDefaultAsync(u => u.Id == id);
+
+            if (isLiker)
+            {
+                return user.Likers.Where(u => u.LikeeId == id).Select(u => u.LikerId);
+            }
+            else
+            {
+                return user.Likers.Where(u => u.LikerId == id).Select(u => u.LikeeId);
+            }
         }
 
         public async Task<bool> SaveAll() => await context.SaveChangesAsync() > 0;
