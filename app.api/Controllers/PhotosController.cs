@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace app.api.Controllers
 {
-    [ApiController(), Authorize(), Route("api/users/{userId}/photos")]
+    [ApiController(), Authorize(), Route("api/users/{userId}/[controller]")]
     public class PhotosController : ControllerBase
     {
         private Cloudinary cloudinary;

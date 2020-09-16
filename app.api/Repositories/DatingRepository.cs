@@ -101,5 +101,17 @@ namespace app.api.Repositories
             var photo = context.Photos.FirstOrDefaultAsync(p => p.Id == id);
             return photo;
         }
+
+        public async Task<Message> GetMessage(int id) => await context.Messages.FirstOrDefaultAsync(m => m.Id == id);
+
+        public Task<PagedList<Message>> GetMessagesForUser()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<Message>> GetMessageThread(int userId, int recipientId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
