@@ -1,4 +1,5 @@
 ﻿using app.api.Entities;
+using app.api.Helpers.Messaging;
 using app.api.Helpers.Paging;
 using app.api.Helpers.Users;
 using System.Collections.Generic;
@@ -13,7 +14,7 @@ namespace app.api.Interfaces.Respositories
         Task<Photo> GetDefaultPhoto(int userId);
         Task<Like> GetLike(int userId, int recipientId);
         Task<Message> GetMessage(int id);
-        Task<PagedList<Message>> GetMessagesForUser();
+        Task<PagedList<Message>> GetMessagesForUser(MessageParams messageParams);
         Task<IEnumerable<Message>> GetMessageThread(int userId, int recipientId);
         Task<Photo> GetPhoto(int id);
         Task<User> GetUser(int id);
