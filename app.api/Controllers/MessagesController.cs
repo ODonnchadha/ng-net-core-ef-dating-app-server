@@ -1,11 +1,14 @@
 ﻿using app.api.DTOs;
 using app.api.Entities;
+using app.api.Extensions;
 using app.api.Filters;
+using app.api.Helpers.Messaging;
 using app.api.Interfaces.Respositories;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -37,6 +40,30 @@ namespace app.api.Controllers
             }
 
             return Ok(entity);
+        }
+
+        /// <summary>
+        /// /api/users/40/messages?messageContainer=Inbox
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="messageParams"></param>
+        /// <returns></returns>
+        [HttpGet()]
+        public async Task<IActionResult> GetMessagesForUser(int userId, [FromQuery]MessageParams messageParams)
+        {
+            if (userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+            {
+                return Unauthorized();
+            }
+
+            messageParams.UserId = userId;
+            var entities = await repository.GetMessagesForUser(messageParams);
+            var dto = mapper.Map<IEnumerable<MessageToReturn>>(entities);
+
+            Response.AddPagination(
+                entities.CurrentPage, entities.PageSize, entities.TotalCount, entities.TotalPages);
+
+            return Ok(dto);
         }
 
         [HttpPost()]

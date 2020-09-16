@@ -36,6 +36,13 @@ namespace app.api.Mappings
                 options => options.MapFrom(
                     source => source.DateOfBirth.Age()));
             CreateMap<Entities.Message, DTOs.MessageForCreation>();
+            CreateMap<Entities.Message, DTOs.MessageToReturn>().ForMember(
+                m => m.SenderProfileUrl,
+                options => options.MapFrom(
+                    u => u.Sender.Photos.FirstOrDefault(p => p.IsDefault).Url)).ForMember(
+                m => m.RecipientProfileUrl,
+                options => options.MapFrom(
+                    u => u.Recipient.Photos.FirstOrDefault(p => p.IsDefault).Url));
             CreateMap<Entities.Photo, DTOs.PhotoForDetails>();
             CreateMap<Entities.Photo, DTOs.PhotoForReturn>();
             #endregion
