@@ -105,9 +105,17 @@ namespace app.api.Repositories
 
         public async Task<Message> GetMessage(int id) => await context.Messages.FirstOrDefaultAsync(m => m.Id == id);
 
-        public Task<IEnumerable<Message>> GetMessageThread(int userId, int recipientId)
+        public async Task<IEnumerable<Message>> GetMessageThread(int userId, int recipientId)
         {
-            throw new NotImplementedException();
+            // Obtain the entire "conversation."
+            var messages = await context.Messages.Include(
+                m => m.Sender).ThenInclude(p => p.Photos).Include(
+                m => m.Recipient).ThenInclude(p => p.Photos).Where(
+                m => m.RecipientId == userId && m.SenderId == recipientId ||
+                m.RecipientId == recipientId && m.SenderId == userId)
+                .OrderByDescending(m => m.MessageSent).ToListAsync();
+
+            return messages;
         }
 
         public async Task<PagedList<Message>> GetMessagesForUser(MessageParams messageParams)

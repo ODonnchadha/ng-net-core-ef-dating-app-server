@@ -25,7 +25,7 @@ namespace app.api.Controllers
             this.repository = repository;
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id}", Name = "GetMessage")]
         public async Task<IActionResult> GetMessage(int userId, int id)
         {
             if (userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
@@ -40,6 +40,20 @@ namespace app.api.Controllers
             }
 
             return Ok(entity);
+        }
+
+        [HttpGet("threads/{recipientId}")]
+        public async Task<IActionResult> GetMessageThread(int userId, int recipientId)
+        {
+            if (userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+            {
+                return Unauthorized();
+            }
+
+            var entities = await repository.GetMessageThread(userId, recipientId);
+            var dto = mapper.Map<IEnumerable<MessageToReturn>>(entities);
+
+            return Ok(dto);
         }
 
         /// <summary>
