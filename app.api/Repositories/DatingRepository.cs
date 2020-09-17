@@ -76,14 +76,17 @@ namespace app.api.Repositories
             var user = await context.Users.Include(
                 u => u.Likers).Include(u => u.Likees).FirstOrDefaultAsync(u => u.Id == id);
 
+            IEnumerable<int> result;
             if (isLiker)
             {
-                return user.Likers.Where(u => u.LikeeId == id).Select(u => u.LikerId);
+                result = user.Likers.Where(u => u.LikeeId == id).Select(u => u.LikerId);
             }
             else
             {
-                return user.Likees.Where(u => u.LikerId == id).Select(u => u.LikeeId);
+                result = user.Likees.Where(u => u.LikerId == id).Select(u => u.LikeeId);
             }
+
+            return result;
         }
 
         public async Task<bool> SaveAll() => await context.SaveChangesAsync() > 0;
@@ -111,8 +114,8 @@ namespace app.api.Repositories
             var messages = await context.Messages.Include(
                 m => m.Sender).ThenInclude(p => p.Photos).Include(
                 m => m.Recipient).ThenInclude(p => p.Photos).Where(
-                m => m.RecipientId == userId && m.SenderId == recipientId ||
-                m.RecipientId == recipientId && m.SenderId == userId)
+                m => m.RecipientId == userId && m.RecipientDeleted == false && m.SenderId == recipientId ||
+                m.RecipientId == recipientId && m.SenderDeleted == false && m.SenderId == userId)
                 .OrderByDescending(m => m.MessageSent).ToListAsync();
 
             return messages;
@@ -127,13 +130,17 @@ namespace app.api.Repositories
             switch (messageParams.MessageContainer)
             {
                 case "Inbox":
-                    messages = messages.Where(m => m.RecipientId == messageParams.UserId);
+                    messages = messages.Where(m => 
+                        m.RecipientId == messageParams.UserId && m.RecipientDeleted == false);
                     break;
                 case "Outbox":
-                    messages = messages.Where(m => m.SenderId == messageParams.UserId);
+                    messages = messages.Where(m => 
+                        m.SenderId == messageParams.UserId && m.SenderDeleted == false);
                     break;
                 default:
-                    messages = messages.Where(m => m.RecipientId == messageParams.UserId && m.IsRead == false);
+                    messages = messages.Where(
+                        m => m.RecipientId == messageParams.UserId && m.RecipientDeleted == false 
+                        && m.IsRead == false);
                     break;
             }
 

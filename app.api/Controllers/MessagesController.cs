@@ -25,7 +25,7 @@ namespace app.api.Controllers
             this.repository = repository;
         }
 
-        [HttpGet("{id}", Name = "GetMessage")]
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetMessage(int userId, int id)
         {
             if (userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
@@ -83,12 +83,11 @@ namespace app.api.Controllers
         [HttpPost()]
         public async Task<IActionResult> CreateMessage(int userId, MessageForCreation dto)
         {
-            if (userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+            var sender = await repository.GetUser(userId);
+            if (sender?.Id != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
             {
                 return Unauthorized();
             }
-
-            dto.SenderId = userId;
 
             var recipient = await repository.GetUser(dto.RecipientId);
             if (recipient == null)
@@ -96,17 +95,65 @@ namespace app.api.Controllers
                 return BadRequest("Recipient does not exist");
             }
 
+            dto.SenderId = sender.Id;
             var message = mapper.Map<Message>(dto);
-
             repository.Add(message);
 
             if (await repository.SaveAll())
             {
-                return CreatedAtRoute("GetMessage", 
-                    new { id = message.Id }, mapper.Map<MessageForCreation>(message));
+                return Ok(mapper.Map<MessageToReturn>(message));
             }
 
             throw new Exception("Message creation failed on save");
+        }
+
+        [HttpPost("{id}")]
+        public async Task<IActionResult> DeleteMessage(int id, int userId)
+        {
+            if (userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+            {
+                return Unauthorized();
+            }
+
+            var entity = await repository.GetMessage(id);
+
+            if (entity.SenderId == userId) entity.SenderDeleted = true;
+            if (entity.RecipientId == userId) entity.RecipientDeleted = true;
+
+            if (entity.SenderDeleted && entity.RecipientDeleted)
+            {
+                repository.Delete<Message>(entity);
+            }
+
+            if (await repository.SaveAll())
+            {
+                return NoContent();
+            }
+
+            throw new Exception("Error deleting message");
+        }
+
+        [HttpPost("{id}/read")]
+        public async Task<IActionResult> MarkMessageAsRead(int userId, int id)
+        {
+            if (userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+            {
+                return Unauthorized();
+            }
+
+            var message = await repository.GetMessage(id);
+
+            if (message.RecipientId != userId)
+            {
+                return Unauthorized();
+            }
+
+            message.IsRead = true;
+            message.DateRead = DateTime.Now;
+
+            await repository.SaveAll();
+
+            return NoContent();
         }
     }
 }
