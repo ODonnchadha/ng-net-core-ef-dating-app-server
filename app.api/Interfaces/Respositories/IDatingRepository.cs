@@ -1,6 +1,8 @@
 ﻿using app.api.Entities;
+using app.api.Helpers.Messaging;
 using app.api.Helpers.Paging;
 using app.api.Helpers.Users;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace app.api.Interfaces.Respositories
@@ -9,11 +11,14 @@ namespace app.api.Interfaces.Respositories
     {
         void Add<T>(T entity) where T : class;
         void Delete<T>(T entity) where T : class;
+        Task<Photo> GetDefaultPhoto(int userId);
+        Task<Like> GetLike(int userId, int recipientId);
+        Task<Message> GetMessage(int id);
+        Task<PagedList<Message>> GetMessagesForUser(MessageParams messageParams);
+        Task<IEnumerable<Message>> GetMessageThread(int userId, int recipientId);
+        Task<Photo> GetPhoto(int id);
         Task<User> GetUser(int id);
         Task<PagedList<User>> GetUsers(UserParams userParams);
         Task<bool> SaveAll();
-        Task<Like> GetLike(int userId, int recipientId);
-        Task<Photo> GetDefaultPhoto(int userId);
-        Task<Photo> GetPhoto(int id);
     }
 }

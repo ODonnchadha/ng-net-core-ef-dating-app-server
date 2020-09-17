@@ -1,5 +1,6 @@
 ﻿using app.api.Context;
 using app.api.Entities;
+using app.api.Helpers.Messaging;
 using app.api.Helpers.Paging;
 using app.api.Helpers.Users;
 using app.api.Interfaces.Respositories;
@@ -75,14 +76,17 @@ namespace app.api.Repositories
             var user = await context.Users.Include(
                 u => u.Likers).Include(u => u.Likees).FirstOrDefaultAsync(u => u.Id == id);
 
+            IEnumerable<int> result;
             if (isLiker)
             {
-                return user.Likers.Where(u => u.LikeeId == id).Select(u => u.LikerId);
+                result = user.Likers.Where(u => u.LikeeId == id).Select(u => u.LikerId);
             }
             else
             {
-                return user.Likees.Where(u => u.LikerId == id).Select(u => u.LikeeId);
+                result = user.Likees.Where(u => u.LikerId == id).Select(u => u.LikeeId);
             }
+
+            return result;
         }
 
         public async Task<bool> SaveAll() => await context.SaveChangesAsync() > 0;
@@ -100,6 +104,49 @@ namespace app.api.Repositories
         {
             var photo = context.Photos.FirstOrDefaultAsync(p => p.Id == id);
             return photo;
+        }
+
+        public async Task<Message> GetMessage(int id) => await context.Messages.FirstOrDefaultAsync(m => m.Id == id);
+
+        public async Task<IEnumerable<Message>> GetMessageThread(int userId, int recipientId)
+        {
+            // Obtain the entire "conversation."
+            var messages = await context.Messages.Include(
+                m => m.Sender).ThenInclude(p => p.Photos).Include(
+                m => m.Recipient).ThenInclude(p => p.Photos).Where(
+                m => m.RecipientId == userId && m.RecipientDeleted == false && m.SenderId == recipientId ||
+                m.RecipientId == recipientId && m.SenderDeleted == false && m.SenderId == userId)
+                .OrderByDescending(m => m.MessageSent).ToListAsync();
+
+            return messages;
+        }
+
+        public async Task<PagedList<Message>> GetMessagesForUser(MessageParams messageParams)
+        {
+            var messages = context.Messages.Include(
+                m => m.Sender).ThenInclude(p => p.Photos).Include(
+                m => m.Recipient).ThenInclude(p => p.Photos).AsQueryable();
+
+            switch (messageParams.MessageContainer)
+            {
+                case "Inbox":
+                    messages = messages.Where(m => 
+                        m.RecipientId == messageParams.UserId && m.RecipientDeleted == false);
+                    break;
+                case "Outbox":
+                    messages = messages.Where(m => 
+                        m.SenderId == messageParams.UserId && m.SenderDeleted == false);
+                    break;
+                default:
+                    messages = messages.Where(
+                        m => m.RecipientId == messageParams.UserId && m.RecipientDeleted == false 
+                        && m.IsRead == false);
+                    break;
+            }
+
+            messages = messages.OrderByDescending(m => m.MessageSent);
+
+            return await PagedList<Message>.CreateAsync(messages, messageParams.PageNumber, messageParams.PageSize);
         }
     }
 }
