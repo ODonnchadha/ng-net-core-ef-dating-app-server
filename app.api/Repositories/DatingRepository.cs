@@ -21,15 +21,13 @@ namespace app.api.Repositories
 
         public async Task<User> GetUser(int id)
         {
-            var user = await context.Users.Include(
-                p => p.Photos).FirstOrDefaultAsync(u => u.Id == id);
+            var user = await context.Users.FirstOrDefaultAsync(u => u.Id == id);
             return user;
         }
 
         public async Task<PagedList<User>> GetUsers(UserParams userParams)
         {
-            var users = context.Users.Include(
-                p => p.Photos).OrderByDescending(u => u.LastActive).AsQueryable();
+            var users = context.Users.OrderByDescending(u => u.LastActive).AsQueryable();
 
             users = users.Where(u => u.Id != userParams.UserId);
             users = users.Where(u => u.Gender == userParams.Gender);
@@ -73,8 +71,7 @@ namespace app.api.Repositories
 
         private async Task<IEnumerable<int>> GetUserLikes(int id, bool isLiker)
         {
-            var user = await context.Users.Include(
-                u => u.Likers).Include(u => u.Likees).FirstOrDefaultAsync(u => u.Id == id);
+            var user = await context.Users.FirstOrDefaultAsync(u => u.Id == id);
 
             IEnumerable<int> result;
             if (isLiker)
@@ -111,9 +108,7 @@ namespace app.api.Repositories
         public async Task<IEnumerable<Message>> GetMessageThread(int userId, int recipientId)
         {
             // Obtain the entire "conversation."
-            var messages = await context.Messages.Include(
-                m => m.Sender).ThenInclude(p => p.Photos).Include(
-                m => m.Recipient).ThenInclude(p => p.Photos).Where(
+            var messages = await context.Messages.Where(
                 m => m.RecipientId == userId && m.RecipientDeleted == false && m.SenderId == recipientId ||
                 m.RecipientId == recipientId && m.SenderDeleted == false && m.SenderId == userId)
                 .OrderByDescending(m => m.MessageSent).ToListAsync();
@@ -123,9 +118,7 @@ namespace app.api.Repositories
 
         public async Task<PagedList<Message>> GetMessagesForUser(MessageParams messageParams)
         {
-            var messages = context.Messages.Include(
-                m => m.Sender).ThenInclude(p => p.Photos).Include(
-                m => m.Recipient).ThenInclude(p => p.Photos).AsQueryable();
+            var messages = context.Messages.AsQueryable();
 
             switch (messageParams.MessageContainer)
             {

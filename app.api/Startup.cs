@@ -41,9 +41,12 @@ namespace app.api
             services.AddCors();
             services.Configure<CloudinarySettings>(Configuration.GetSection("CloudinarySettings"));
             services.AddAutoMapper(typeof(DatingRepository).Assembly);
+
             services.AddDbContext<DataContext>(
-                context => context.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection")));
+                context => {
+                    context.UseLazyLoadingProxies();
+                    context.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
+                });
 
             services.AddScoped<IAuthRepository, AuthRepository>();
             services.AddScoped<IDatingRepository, DatingRepository>();
